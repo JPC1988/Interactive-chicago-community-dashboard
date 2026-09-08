@@ -1,16 +1,10 @@
-from pathlib import Path
-
-# Target directory and file path
-dataset_dir = Path("chicago_dashboard_dataset")
-dataset_dir.mkdir(parents=True, exist_ok=True)
-app_file = dataset_dir / "app.py"
-
-streamlit_app = r'''import streamlit as st
+import streamlit as st
 import pandas as pd
 import numpy as np
 import geopandas as gpd
 import plotly.express as px
 from pathlib import Path
+
 
 # ============================================================
 # PAGE CONFIGURATION
@@ -20,95 +14,234 @@ st.set_page_config(
     page_title="Chicago Community Development Dashboard",
     page_icon="🏙️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
+
 # ============================================================
-# CUSTOM CSS
+# RESPONSIVE CUSTOM CSS
 # ============================================================
 
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
 
-    /* Main title */
+    /* --------------------------------------------------------
+       GENERAL LAYOUT
+    -------------------------------------------------------- */
+
+    .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 2rem;
+        padding-left: 3rem;
+        padding-right: 3rem;
+        max-width: 1600px;
+    }
+
+    /* --------------------------------------------------------
+       DASHBOARD TITLE
+    -------------------------------------------------------- */
+
     .dashboard-title {
-        font-size: 34px;
+        font-size: 2.6rem;
         font-weight: 700;
-        margin-bottom: 4px;
+        text-align: center;
+        margin-bottom: 0.2rem;
+        line-height: 1.2;
     }
 
     .dashboard-subtitle {
-        font-size: 16px;
-        color: #666;
-        margin-bottom: 25px;
-    }
-
-    /* Section headers */
-    .section-title {
-        font-size: 23px;
-        font-weight: 700;
-        margin-top: 25px;
-        margin-bottom: 12px;
-    }
-
-    /* KPI Cards */
-    .kpi-card {
-        background: white;
-        padding: 18px;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-        box-shadow: 0 2px 7px rgba(0,0,0,0.06);
         text-align: center;
-        transition: all 0.25s ease;
-        cursor: pointer;
-        min-height: 135px;
+        font-size: 1.05rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.75;
     }
 
-    .kpi-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.14);
-        border-color: #888;
+    /* --------------------------------------------------------
+       SECTION TITLES
+    -------------------------------------------------------- */
+
+    .section-title {
+        font-size: 1.45rem;
+        font-weight: 700;
+        margin-top: 1.5rem;
+        margin-bottom: 0.8rem;
+    }
+
+    /* --------------------------------------------------------
+       KPI CARDS
+    -------------------------------------------------------- */
+
+    .kpi-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(128, 128, 128, 0.25);
+        text-align: center;
+        min-height: 125px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-bottom: 0.8rem;
+        background: rgba(128, 128, 128, 0.04);
     }
 
     .kpi-label {
-        font-size: 14px;
+        font-size: 0.85rem;
         font-weight: 600;
-        color: #666;
-        margin-bottom: 8px;
+        opacity: 0.75;
+        margin-bottom: 0.35rem;
     }
 
     .kpi-value {
-        font-size: 28px;
+        font-size: 1.65rem;
         font-weight: 700;
-        margin-bottom: 6px;
-        color: #111827;
+        line-height: 1.1;
     }
 
-    .kpi-description {
-        font-size: 11px;
-        color: #888;
+    /* --------------------------------------------------------
+       INFO BOX
+    -------------------------------------------------------- */
+
+    .info-box {
+        padding: 1rem;
+        border-radius: 10px;
+        border: 1px solid rgba(128, 128, 128, 0.25);
+        margin-top: 1rem;
+        margin-bottom: 1rem;
     }
 
-    /* Filter information */
-    .filter-box {
-        background: #f8f9fa;
-        padding: 12px 16px;
-        border-radius: 8px;
-        border-left: 4px solid #555;
-        margin-bottom: 20px;
-    }
+    /* --------------------------------------------------------
+       FOOTER
+    -------------------------------------------------------- */
 
-    /* Footer */
     .footer {
         text-align: center;
-        color: #777;
-        font-size: 13px;
-        margin-top: 40px;
-        padding: 20px;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(128, 128, 128, 0.25);
+        font-size: 0.85rem;
+        opacity: 0.7;
     }
 
-</style>
-""", unsafe_allow_html=True)
+    /* --------------------------------------------------------
+       TABLET
+    -------------------------------------------------------- */
+
+    @media (max-width: 992px) {
+
+        .block-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.1rem;
+        }
+
+        .dashboard-subtitle {
+            font-size: 0.95rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+        }
+
+        .kpi-card {
+            min-height: 110px;
+        }
+
+        .kpi-value {
+            font-size: 1.45rem;
+        }
+    }
+
+    /* --------------------------------------------------------
+       MOBILE
+    -------------------------------------------------------- */
+
+    @media (max-width: 768px) {
+
+        .block-container {
+            padding-top: 1rem;
+            padding-left: 0.8rem;
+            padding-right: 0.8rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.65rem;
+        }
+
+        .dashboard-subtitle {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+        }
+
+        .kpi-card {
+            min-height: 95px;
+            padding: 0.7rem;
+            border-radius: 10px;
+        }
+
+        .kpi-label {
+            font-size: 0.72rem;
+        }
+
+        .kpi-value {
+            font-size: 1.2rem;
+        }
+
+        .info-box {
+            font-size: 0.85rem;
+        }
+
+    }
+
+    /* --------------------------------------------------------
+       SMALL MOBILE
+    -------------------------------------------------------- */
+
+    @media (max-width: 480px) {
+
+        .block-container {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.4rem;
+        }
+
+        .dashboard-subtitle {
+            font-size: 0.78rem;
+        }
+
+        .kpi-card {
+            min-height: 85px;
+            padding: 0.5rem;
+        }
+
+        .kpi-label {
+            font-size: 0.65rem;
+        }
+
+        .kpi-value {
+            font-size: 1rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+        }
+
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
@@ -118,51 +251,173 @@ st.markdown("""
 @st.cache_data
 def load_data():
 
-    # Multi-path fallbacks to locate geojson dataset
     possible_paths = [
         Path(__file__).parent / "data" / "chicago_community_development.geojson",
+        Path(__file__).parent / "chicago_community_development.geojson",
         Path("chicago_community_development.geojson"),
-        Path("chicago_dashboard_dataset/chicago_community_development.geojson"),
+        Path("chicago_dashboard_dataset") / "chicago_community_development.geojson",
         Path("../chicago_community_development.geojson")
     ]
 
     data_path = None
-    for p in possible_paths:
-        if p.exists():
-            data_path = p
+
+    for path in possible_paths:
+        if path.exists():
+            data_path = path
             break
 
     if data_path is None:
-        raise FileNotFoundError("chicago_community_development.geojson dataset file not found.")
+        raise FileNotFoundError(
+            "The file 'chicago_community_development.geojson' "
+            "could not be found."
+        )
 
     gdf = gpd.read_file(data_path)
 
-    # Calculate or populate required columns if not precomputed
+    # --------------------------------------------------------
+    # Ensure GEOID is treated as text
+    # --------------------------------------------------------
+
+    if "GEOID" in gdf.columns:
+        gdf["GEOID"] = gdf["GEOID"].astype(str)
+
+    # --------------------------------------------------------
+    # Crime rate
+    # --------------------------------------------------------
+
     if "crime_per_1000_workers" not in gdf.columns:
-        if "crime_count" in gdf.columns and "labor_force" in gdf.columns:
-            gdf["crime_per_1000_workers"] = (gdf["crime_count"] / gdf["labor_force"].replace(0, np.nan)) * 1000
-            gdf["crime_per_1000_workers"] = gdf["crime_per_1000_workers"].fillna(0)
+
+        if (
+            "crime_count" in gdf.columns
+            and "labor_force" in gdf.columns
+        ):
+
+            labor_force = gdf["labor_force"].replace(0, np.nan)
+
+            gdf["crime_per_1000_workers"] = (
+                gdf["crime_count"] / labor_force
+            ) * 1000
+
+            gdf["crime_per_1000_workers"] = (
+                gdf["crime_per_1000_workers"]
+                .replace([np.inf, -np.inf], np.nan)
+                .fillna(0)
+            )
+
         else:
             gdf["crime_per_1000_workers"] = 0.0
 
+    # --------------------------------------------------------
+    # Development priority score
+    # --------------------------------------------------------
+
     if "development_priority_score" not in gdf.columns:
-        gdf["development_priority_score"] = gdf.get("unemployment_rate", 0) * 0.5
+
+        unemployment = pd.to_numeric(
+            gdf.get("unemployment_rate", 0),
+            errors="coerce"
+        ).fillna(0)
+
+        education = pd.to_numeric(
+            gdf.get("college_education_rate", 0),
+            errors="coerce"
+        ).fillna(0)
+
+        resources = pd.to_numeric(
+            gdf.get("community_resources", 0),
+            errors="coerce"
+        ).fillna(0)
+
+        crime = pd.to_numeric(
+            gdf.get("crime_per_1000_workers", 0),
+            errors="coerce"
+        ).fillna(0)
+
+        # Normalize indicators to 0–100 where possible.
+        unemployment_score = unemployment.clip(0, 100)
+
+        education_score = (
+            100 - education.clip(0, 100)
+        )
+
+        resource_score = (
+            100
+            - (
+                resources / resources.max() * 100
+                if resources.max() > 0
+                else resources
+            )
+        )
+
+        crime_score = (
+            crime / crime.max() * 100
+            if crime.max() > 0
+            else crime
+        )
+
+        # Higher score = greater development need.
+        gdf["development_priority_score"] = (
+            unemployment_score * 0.40
+            + education_score * 0.25
+            + resource_score * 0.20
+            + crime_score * 0.15
+        )
+
+    # --------------------------------------------------------
+    # Development priority category
+    # --------------------------------------------------------
 
     if "development_priority" not in gdf.columns:
-        scores = gdf["development_priority_score"]
-        q25, q50, q75 = scores.quantile([0.25, 0.50, 0.75])
-        
-        def assign_priority(s):
-            if s <= q25:
+
+        scores = pd.to_numeric(
+            gdf["development_priority_score"],
+            errors="coerce"
+        ).fillna(0)
+
+        q25, q50, q75 = scores.quantile(
+            [0.25, 0.50, 0.75]
+        )
+
+        def assign_priority(score):
+
+            if score <= q25:
                 return "Low Priority"
-            elif s <= q50:
+
+            elif score <= q50:
                 return "Moderate Priority"
-            elif s <= q75:
+
+            elif score <= q75:
                 return "High Priority"
+
             else:
                 return "Very High Priority"
 
-        gdf["development_priority"] = scores.apply(assign_priority)
+        gdf["development_priority"] = (
+            scores.apply(assign_priority)
+        )
+
+    # --------------------------------------------------------
+    # Clean numeric columns
+    # --------------------------------------------------------
+
+    numeric_columns = [
+        "labor_force",
+        "unemployed",
+        "unemployment_rate",
+        "community_resources",
+        "crime_per_1000_workers",
+        "college_education_rate",
+        "development_priority_score"
+    ]
+
+    for column in numeric_columns:
+
+        if column in gdf.columns:
+
+            gdf[column] = pd.to_numeric(
+                gdf[column],
+                errors="coerce"
+            ).fillna(0)
 
     return gdf
 
@@ -172,12 +427,17 @@ def load_data():
 # ============================================================
 
 try:
+
     dashboard_data = load_data()
 
 except Exception as e:
 
-    st.error("Unable to load the Chicago community development dataset.")
+    st.error(
+        "Unable to load the Chicago community development dataset."
+    )
+
     st.exception(e)
+
     st.stop()
 
 
@@ -187,7 +447,6 @@ except Exception as e:
 
 required_columns = [
     "GEOID",
-    "NAMELSAD",
     "labor_force",
     "unemployed",
     "unemployment_rate",
@@ -200,29 +459,57 @@ required_columns = [
 ]
 
 missing_columns = [
-    col for col in required_columns
-    if col not in dashboard_data.columns
+    column
+    for column in required_columns
+    if column not in dashboard_data.columns
 ]
 
 if missing_columns:
 
-    st.error("The following required columns are missing:")
+    st.error(
+        "The dataset is missing the following required columns:"
+    )
+
     st.write(missing_columns)
+
     st.stop()
 
 
 # ============================================================
-# SIDEBAR
+# DASHBOARD HEADER
 # ============================================================
 
-st.sidebar.title(" Dashboard Filters")
+st.markdown(
+    '<div class="dashboard-title">'
+    '🏙️ Chicago Community Development Dashboard'
+    '</div>',
+    unsafe_allow_html=True
+)
 
-st.sidebar.markdown("Use the controls below to explore Chicago census tracts.")
+st.markdown(
+    '<div class="dashboard-subtitle">'
+    'Geospatial analysis of employment, education, crime, '
+    'and community resources across Chicago census tracts'
+    '</div>',
+    unsafe_allow_html=True
+)
 
-st.sidebar.markdown("---")
+
+# ============================================================
+# SIDEBAR FILTERS
+# ============================================================
+
+st.sidebar.header("🎛️ Dashboard Filters")
+
+st.sidebar.markdown(
+    "Use the filters below to explore different development "
+    "conditions across Chicago."
+)
 
 
+# ------------------------------------------------------------
 # Map indicator
+# ------------------------------------------------------------
 
 indicator_options = {
     "Unemployment Rate": "unemployment_rate",
@@ -232,13 +519,19 @@ indicator_options = {
     "Development Priority Score": "development_priority_score"
 }
 
-selected_indicator = st.sidebar.selectbox(
+selected_indicator_label = st.sidebar.selectbox(
     "Map Indicator",
     list(indicator_options.keys())
 )
 
+selected_indicator = indicator_options[
+    selected_indicator_label
+]
 
-# Priority filter
+
+# ------------------------------------------------------------
+# Development priority filter
+# ------------------------------------------------------------
 
 priority_options = [
     "All",
@@ -258,416 +551,643 @@ selected_priority = st.sidebar.selectbox(
 # FILTER DATA
 # ============================================================
 
-if selected_priority == "All":
-    filtered_data = dashboard_data.copy()
-else:
-    filtered_data = dashboard_data[
-        dashboard_data["development_priority"] == selected_priority
+filtered_data = dashboard_data.copy()
+
+if selected_priority != "All":
+
+    filtered_data = filtered_data[
+        filtered_data["development_priority"]
+        == selected_priority
     ].copy()
 
 
 # ============================================================
-# HEADER
+# KPI SECTION
 # ============================================================
 
 st.markdown(
-    '<div class="dashboard-title">🏙️ Chicago Community Development Dashboard</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="dashboard-subtitle">'
-    'Interactive analysis of employment, education, community resources, '
-    'crime, and development priorities across Chicago census tracts.'
-    '</div>',
+    '<div class="section-title">📊 Key Performance Indicators</div>',
     unsafe_allow_html=True
 )
 
 
+total_tracts = len(filtered_data)
+
+average_unemployment = (
+    filtered_data["unemployment_rate"].mean()
+    if total_tracts > 0
+    else 0
+)
+
+total_resources = (
+    filtered_data["community_resources"].sum()
+    if total_tracts > 0
+    else 0
+)
+
+average_crime_rate = (
+    filtered_data["crime_per_1000_workers"].mean()
+    if total_tracts > 0
+    else 0
+)
+
+average_education = (
+    filtered_data["college_education_rate"].mean()
+    if total_tracts > 0
+    else 0
+)
+
+average_priority = (
+    filtered_data["development_priority_score"].mean()
+    if total_tracts > 0
+    else 0
+)
+
+
+# ------------------------------------------------------------
+# KPI columns
+# ------------------------------------------------------------
+
+kpi1, kpi2, kpi3 = st.columns(3)
+
+with kpi1:
+
+    st.markdown(
+        f"""
+        <div class="kpi-card">
+            <div class="kpi-label">CENSUS TRACTS</div>
+            <div class="kpi-value">{total_tracts:,}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with kpi2:
+
+    st.markdown(
+        f"""
+        <div class="kpi-card">
+            <div class="kpi-label">AVG. UNEMPLOYMENT</div>
+            <div class="kpi-value">{average_unemployment:.2f}%</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with kpi3:
+
+    st.markdown(
+        f"""
+        <div class="kpi-card">
+            <div class="kpi-label">COMMUNITY RESOURCES</div>
+            <div class="kpi-value">{total_resources:,.0f}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+kpi4, kpi5, kpi6 = st.columns(3)
+
+with kpi4:
+
+    st.markdown(
+        f"""
+        <div class="kpi-card">
+            <div class="kpi-label">AVG. CRIME RATE</div>
+            <div class="kpi-value">{average_crime_rate:.2f}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with kpi5:
+
+    st.markdown(
+        f"""
+        <div class="kpi-card">
+            <div class="kpi-label">AVG. COLLEGE EDUCATION</div>
+            <div class="kpi-value">{average_education:.2f}%</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with kpi6:
+
+    st.markdown(
+        f"""
+        <div class="kpi-card">
+            <div class="kpi-label">AVG. PRIORITY SCORE</div>
+            <div class="kpi-value">{average_priority:.2f}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
 # ============================================================
-# ACTIVE FILTERS
+# MAP SECTION
 # ============================================================
+
+st.markdown(
+    '<div class="section-title">🗺️ Chicago Community Development Map</div>',
+    unsafe_allow_html=True
+)
 
 st.markdown(
     f"""
-    <div class="filter-box">
-        <b>Active filters:</b>
-        Map Indicator = {selected_indicator}
-        &nbsp;&nbsp; | &nbsp;&nbsp;
-        Development Priority = {selected_priority}
-        &nbsp;&nbsp; | &nbsp;&nbsp;
-        Census Tracts = {len(filtered_data):,}
+    <div class="info-box">
+        <b>Current map indicator:</b> {selected_indicator_label}
+        <br>
+        Darker areas represent higher values of the selected indicator.
+        Use the sidebar to change the indicator or development priority.
     </div>
     """,
     unsafe_allow_html=True
 )
 
 
-# ============================================================
-# KPI CALCULATIONS
-# ============================================================
+# ------------------------------------------------------------
+# Prepare map data
+# ------------------------------------------------------------
 
-num_tracts = len(filtered_data)
-avg_unemployment = filtered_data["unemployment_rate"].mean()
-total_resources = filtered_data["community_resources"].sum()
-avg_crime = filtered_data["crime_per_1000_workers"].mean()
-avg_education = filtered_data["college_education_rate"].mean()
-avg_priority_score = filtered_data["development_priority_score"].mean()
-
-
-# ============================================================
-# INTERACTIVE KPI CARDS
-# ============================================================
-
-st.markdown(
-    '<div class="section-title"> Key Performance Indicators</div>',
-    unsafe_allow_html=True
-)
-
-kpi1, kpi2, kpi3, kpi4, kpi5, kpi6 = st.columns(6)
-
-with kpi1:
-    st.markdown(
-        f"""<div class="kpi-card" title="Number of census tracts included in the current filter.">
-            <div class="kpi-label">Census Tracts</div>
-            <div class="kpi-value">{num_tracts:,}</div>
-            <div class="kpi-description">Areas currently analysed</div>
-        </div>""",
-        unsafe_allow_html=True
-    )
-
-with kpi2:
-    st.markdown(
-        f"""<div class="kpi-card" title="Average unemployment rate among the selected census tracts.">
-            <div class="kpi-label">Avg Unemployment</div>
-            <div class="kpi-value">{avg_unemployment:.2f}%</div>
-            <div class="kpi-description">Average unemployment rate</div>
-        </div>""",
-        unsafe_allow_html=True
-    )
-
-with kpi3:
-    st.markdown(
-        f"""<div class="kpi-card" title="Total number of mapped community resources in the selected census tracts.">
-            <div class="kpi-label">Community Resources</div>
-            <div class="kpi-value">{total_resources:,.0f}</div>
-            <div class="kpi-description">Total mapped resources</div>
-        </div>""",
-        unsafe_allow_html=True
-    )
-
-with kpi4:
-    st.markdown(
-        f"""<div class="kpi-card" title="Average reported crime count per 1,000 workers across the selected census tracts.">
-            <div class="kpi-label">Avg Crime Rate</div>
-            <div class="kpi-value">{avg_crime:.2f}</div>
-            <div class="kpi-description">Crime per 1,000 workers</div>
-        </div>""",
-        unsafe_allow_html=True
-    )
-
-with kpi5:
-    st.markdown(
-        f"""<div class="kpi-card" title="Average percentage of residents aged 25+ with a bachelor's degree or higher.">
-            <div class="kpi-label">Avg Education</div>
-            <div class="kpi-value">{avg_education:.2f}%</div>
-            <div class="kpi-description">Bachelor's degree or higher</div>
-        </div>""",
-        unsafe_allow_html=True
-    )
-
-with kpi6:
-    st.markdown(
-        f"""<div class="kpi-card" title="Average development priority score for the selected census tracts.">
-            <div class="kpi-label">Avg Priority Score</div>
-            <div class="kpi-value">{avg_priority_score:.2f}</div>
-            <div class="kpi-description">Development need score</div>
-        </div>""",
-        unsafe_allow_html=True
-    )
-
-
-# ============================================================
-# MAP
-# ============================================================
-
-st.markdown(
-    '<div class="section-title"> Geographic Distribution</div>',
-    unsafe_allow_html=True
-)
-
-map_column = indicator_options[selected_indicator]
 map_data = filtered_data.copy()
-map_data["map_value"] = map_data[map_column]
-map_data["GEOID"] = map_data["GEOID"].astype(str)
 
-geojson = map_data.__geo_interface__
+# Create a readable display value.
+map_data["Map Value"] = map_data[selected_indicator].round(2)
 
-fig_map = px.choropleth_map(
-    map_data,
-    geojson=geojson,
-    locations="GEOID",
-    featureidkey="properties.GEOID",
-    color="map_value",
-    color_continuous_scale="YlOrRd",
-    map_style="open-street-map",
-    center={"lat": 41.8781, "lon": -87.6298},
-    zoom=9.5,
-    opacity=0.65,
-    hover_name="NAMELSAD",
-    hover_data={
-        "GEOID": True,
-        "unemployment_rate": ":.2f",
-        "community_resources": ":,.0f",
-        "crime_per_1000_workers": ":.2f",
-        "college_education_rate": ":.2f",
-        "development_priority_score": ":.2f",
-        "development_priority": True,
-        "map_value": False
-    },
+# Remove empty geometries.
+map_data = map_data[
+    map_data.geometry.notna()
+].copy()
+
+
+# ------------------------------------------------------------
+# Plotly choropleth map
+# ------------------------------------------------------------
+
+if len(map_data) > 0:
+
+    fig_map = px.choropleth_map(
+        map_data,
+        geojson=map_data.__geo_interface__,
+        locations="GEOID",
+        featureidkey="properties.GEOID",
+        color=selected_indicator,
+        color_continuous_scale="YlOrRd",
+        map_style="open-street-map",
+        center={
+            "lat": 41.8781,
+            "lon": -87.6298
+        },
+        zoom=9.5,
+        opacity=0.65,
+        hover_data={
+            "GEOID": True,
+            "unemployment_rate": ":.2f",
+            "community_resources": True,
+            "crime_per_1000_workers": ":.2f",
+            "college_education_rate": ":.2f",
+            "development_priority": True,
+            selected_indicator: False
+        }
+    )
+
+    fig_map.update_layout(
+        autosize=True,
+        height=650,
+        margin={
+            "r": 0,
+            "t": 0,
+            "l": 0,
+            "b": 0
+        },
+        coloraxis_colorbar={
+            "title": selected_indicator_label
+        }
+    )
+
+    st.plotly_chart(
+        fig_map,
+        use_container_width=True
+    )
+
+else:
+
+    st.warning(
+        "No census tracts match the selected filter."
+    )
+
+
+# ============================================================
+# CHART SECTION
+# ============================================================
+
+st.markdown(
+    '<div class="section-title">📈 Development Analysis</div>',
+    unsafe_allow_html=True
+)
+
+
+# ============================================================
+# CHART 1 — TOP 10 UNEMPLOYMENT
+# ============================================================
+
+chart_data = filtered_data.nlargest(
+    10,
+    "unemployment_rate"
+).copy()
+
+chart_data = chart_data.sort_values(
+    "unemployment_rate"
+)
+
+fig1 = px.bar(
+    chart_data,
+    x="unemployment_rate",
+    y="GEOID",
+    orientation="h",
+    title="Top 10 Census Tracts by Unemployment Rate",
     labels={
         "unemployment_rate": "Unemployment Rate (%)",
+        "GEOID": "Census Tract"
+    },
+    text="unemployment_rate"
+)
+
+fig1.update_traces(
+    texttemplate="%{text:.2f}%",
+    textposition="outside"
+)
+
+fig1.update_layout(
+    autosize=True,
+    height=450,
+    margin=dict(
+        l=20,
+        r=20,
+        t=60,
+        b=20
+    )
+)
+
+
+# ============================================================
+# CHART 2 — COMMUNITY RESOURCES
+# ============================================================
+
+resource_data = filtered_data.nlargest(
+    10,
+    "community_resources"
+).copy()
+
+resource_data = resource_data.sort_values(
+    "community_resources"
+)
+
+fig2 = px.bar(
+    resource_data,
+    x="community_resources",
+    y="GEOID",
+    orientation="h",
+    title="Top 10 Census Tracts by Community Resources",
+    labels={
         "community_resources": "Community Resources",
-        "crime_per_1000_workers": "Crime / 1,000 Workers",
-        "college_education_rate": "College Education (%)",
+        "GEOID": "Census Tract"
+    },
+    text="community_resources"
+)
+
+fig2.update_traces(
+    texttemplate="%{text:.0f}",
+    textposition="outside"
+)
+
+fig2.update_layout(
+    autosize=True,
+    height=450,
+    margin=dict(
+        l=20,
+        r=20,
+        t=60,
+        b=20
+    )
+)
+
+
+# ------------------------------------------------------------
+# Display charts
+# ------------------------------------------------------------
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    st.plotly_chart(
+        fig1,
+        use_container_width=True
+    )
+
+with col2:
+
+    st.plotly_chart(
+        fig2,
+        use_container_width=True
+    )
+
+
+# ============================================================
+# CHART 3 — PRIORITY DISTRIBUTION
+# ============================================================
+
+priority_counts = (
+    filtered_data["development_priority"]
+    .value_counts()
+    .reindex(
+        [
+            "Low Priority",
+            "Moderate Priority",
+            "High Priority",
+            "Very High Priority"
+        ],
+        fill_value=0
+    )
+    .reset_index()
+)
+
+priority_counts.columns = [
+    "Development Priority",
+    "Number of Tracts"
+]
+
+fig3 = px.pie(
+    priority_counts,
+    names="Development Priority",
+    values="Number of Tracts",
+    title="Development Priority Distribution",
+    hole=0.35
+)
+
+fig3.update_layout(
+    autosize=True,
+    height=450,
+    margin=dict(
+        l=20,
+        r=20,
+        t=60,
+        b=20
+    )
+)
+
+
+# ============================================================
+# CHART 4 — AVG UNEMPLOYMENT BY PRIORITY
+# ============================================================
+
+priority_unemployment = (
+    filtered_data
+    .groupby("development_priority")[
+        "unemployment_rate"
+    ]
+    .mean()
+    .reindex(
+        [
+            "Low Priority",
+            "Moderate Priority",
+            "High Priority",
+            "Very High Priority"
+        ]
+    )
+    .reset_index()
+)
+
+fig4 = px.bar(
+    priority_unemployment,
+    x="development_priority",
+    y="unemployment_rate",
+    title="Average Unemployment Rate by Development Priority",
+    labels={
+        "development_priority": "Development Priority",
+        "unemployment_rate": "Average Unemployment Rate (%)"
+    },
+    text="unemployment_rate"
+)
+
+fig4.update_traces(
+    texttemplate="%{text:.2f}%",
+    textposition="outside"
+)
+
+fig4.update_layout(
+    autosize=True,
+    height=450,
+    margin=dict(
+        l=20,
+        r=20,
+        t=60,
+        b=20
+    )
+)
+
+
+col3, col4 = st.columns(2)
+
+with col3:
+
+    st.plotly_chart(
+        fig3,
+        use_container_width=True
+    )
+
+with col4:
+
+    st.plotly_chart(
+        fig4,
+        use_container_width=True
+    )
+
+
+# ============================================================
+# CHART 5 — TOP PRIORITY AREAS
+# ============================================================
+
+priority_data = filtered_data.nlargest(
+    10,
+    "development_priority_score"
+).copy()
+
+priority_data = priority_data.sort_values(
+    "development_priority_score"
+)
+
+fig5 = px.bar(
+    priority_data,
+    x="development_priority_score",
+    y="GEOID",
+    orientation="h",
+    title="Top 10 Development Priority Areas",
+    labels={
         "development_priority_score": "Priority Score",
-        "development_priority": "Development Priority"
+        "GEOID": "Census Tract"
+    },
+    text="development_priority_score"
+)
+
+fig5.update_traces(
+    texttemplate="%{text:.2f}",
+    textposition="outside"
+)
+
+fig5.update_layout(
+    autosize=True,
+    height=450,
+    margin=dict(
+        l=20,
+        r=20,
+        t=60,
+        b=20
+    )
+)
+
+
+# ============================================================
+# CHART 6 — UNEMPLOYMENT DISTRIBUTION
+# ============================================================
+
+fig6 = px.histogram(
+    filtered_data,
+    x="unemployment_rate",
+    nbins=25,
+    title="Unemployment Rate Distribution Across Census Tracts",
+    labels={
+        "unemployment_rate": "Unemployment Rate (%)",
+        "count": "Number of Tracts"
     }
 )
 
-fig_map.update_layout(
-    height=650,
-    margin={"l": 0, "r": 0, "t": 10, "b": 0},
-    coloraxis_colorbar_title=selected_indicator
+fig6.update_layout(
+    autosize=True,
+    height=450,
+    margin=dict(
+        l=20,
+        r=20,
+        t=60,
+        b=20
+    )
 )
 
-st.plotly_chart(fig_map, use_container_width=True)
+
+col5, col6 = st.columns(2)
+
+with col5:
+
+    st.plotly_chart(
+        fig5,
+        use_container_width=True
+    )
+
+with col6:
+
+    st.plotly_chart(
+        fig6,
+        use_container_width=True
+    )
 
 
 # ============================================================
-# EMPLOYMENT AND COMMUNITY RESOURCES
+# CHART 7 — CRIME VS EDUCATION
 # ============================================================
 
-st.markdown(
-    '<div class="section-title"> Employment & Community Resources</div>',
-    unsafe_allow_html=True
-)
-
-chart1, chart2 = st.columns(2)
-
-with chart1:
-    top_unemployment = (
-        filtered_data
-        .nlargest(10, "unemployment_rate")
-        .sort_values("unemployment_rate")
-    )
-
-    fig_unemployment = px.bar(
-        top_unemployment,
-        x="unemployment_rate",
-        y="NAMELSAD",
-        orientation="h",
-        title="Top 10 Census Tracts by Unemployment Rate",
-        labels={"unemployment_rate": "Unemployment Rate (%)", "NAMELSAD": "Census Tract"},
-        text="unemployment_rate",
-        color_discrete_sequence=["#D62728"]
-    )
-
-    fig_unemployment.update_traces(texttemplate="%{text:.2f}%", textposition="outside")
-    fig_unemployment.update_layout(height=480, showlegend=False, margin=dict(l=20, r=20, t=60, b=20))
-
-    st.plotly_chart(fig_unemployment, use_container_width=True)
-
-with chart2:
-    top_resources = (
-        filtered_data
-        .nlargest(10, "community_resources")
-        .sort_values("community_resources")
-    )
-
-    fig_resources = px.bar(
-        top_resources,
-        x="community_resources",
-        y="NAMELSAD",
-        orientation="h",
-        title="Top 10 Census Tracts by Community Resources",
-        labels={"community_resources": "Community Resources", "NAMELSAD": "Census Tract"},
-        text="community_resources",
-        color_discrete_sequence=["#2CA02C"]
-    )
-
-    fig_resources.update_traces(texttemplate="%{text:,.0f}", textposition="outside")
-    fig_resources.update_layout(height=480, showlegend=False, margin=dict(l=20, r=20, t=60, b=20))
-
-    st.plotly_chart(fig_resources, use_container_width=True)
-
-
-# ============================================================
-# PRIORITY ANALYSIS
-# ============================================================
-
-st.markdown(
-    '<div class="section-title"> Development Priority Analysis</div>',
-    unsafe_allow_html=True
-)
-
-priority1, priority2 = st.columns(2)
-
-with priority1:
-    priority_counts = (
-        filtered_data["development_priority"]
-        .value_counts()
-        .reset_index()
-    )
-    priority_counts.columns = ["development_priority", "count"]
-
-    fig_priority = px.pie(
-        priority_counts,
-        names="development_priority",
-        values="count",
-        title="Distribution of Development Priority Areas",
-        hole=0.45,
-        color_discrete_sequence=["#4C78A8", "#F2CF5B", "#F58518", "#E45756"]
-    )
-
-    fig_priority.update_layout(height=480, margin=dict(l=20, r=20, t=60, b=20))
-    st.plotly_chart(fig_priority, use_container_width=True)
-
-with priority2:
-    priority_unemployment = (
-        filtered_data
-        .groupby("development_priority", as_index=False)["unemployment_rate"]
-        .mean()
-    )
-
-    priority_order = ["Low Priority", "Moderate Priority", "High Priority", "Very High Priority"]
-    priority_unemployment["order"] = priority_unemployment["development_priority"].map(
-        {name: i for i, name in enumerate(priority_order)}
-    )
-    priority_unemployment = priority_unemployment.sort_values("order")
-
-    fig_priority_unemployment = px.bar(
-        priority_unemployment,
-        x="development_priority",
-        y="unemployment_rate",
-        title="Average Unemployment Rate by Development Priority",
-        labels={
-            "development_priority": "Development Priority",
-            "unemployment_rate": "Average Unemployment Rate (%)"
-        },
-        text="unemployment_rate",
-        color="development_priority",
-        color_discrete_sequence=["#54A24B", "#ECA82C", "#F58518", "#D62728"]
-    )
-
-    fig_priority_unemployment.update_traces(texttemplate="%{text:.2f}%", textposition="outside")
-    fig_priority_unemployment.update_layout(height=480, showlegend=False, margin=dict(l=20, r=20, t=60, b=20))
-
-    st.plotly_chart(fig_priority_unemployment, use_container_width=True)
-
-
-top_priority = (
-    filtered_data
-    .nlargest(10, "development_priority_score")
-    .sort_values("development_priority_score")
-)
-
-fig_top_priority = px.bar(
-    top_priority,
-    x="development_priority_score",
-    y="NAMELSAD",
-    orientation="h",
-    title="Top 10 Community Development Priority Areas",
-    labels={
-        "development_priority_score": "Development Priority Score",
-        "NAMELSAD": "Census Tract"
+fig7 = px.scatter(
+    filtered_data,
+    x="college_education_rate",
+    y="crime_per_1000_workers",
+    size="community_resources",
+    hover_name="GEOID",
+    hover_data={
+        "college_education_rate": ":.2f",
+        "crime_per_1000_workers": ":.2f",
+        "community_resources": True,
+        "unemployment_rate": ":.2f",
+        "development_priority": True
     },
-    text="development_priority_score",
-    color_discrete_sequence=["#9467BD"]
+    title="Crime Rate vs. Educational Attainment",
+    labels={
+        "college_education_rate": "College Education Rate (%)",
+        "crime_per_1000_workers": "Crime Rate per 1,000 Workers",
+        "community_resources": "Community Resources"
+    }
 )
 
-fig_top_priority.update_traces(texttemplate="%{text:.2f}", textposition="outside")
-fig_top_priority.update_layout(height=500, showlegend=False, margin=dict(l=20, r=20, t=60, b=20))
-
-st.plotly_chart(fig_top_priority, use_container_width=True)
+fig7.update_layout(
+    autosize=True,
+    height=500,
+    margin=dict(
+        l=20,
+        r=20,
+        t=60,
+        b=20
+    )
+)
 
 
 # ============================================================
-# UNEMPLOYMENT TREND ACROSS CENSUS TRACTS
+# CHART 8 — UNEMPLOYMENT VS EDUCATION
 # ============================================================
 
-st.markdown(
-    '<div class="section-title"> Unemployment Variation Across Chicago</div>',
-    unsafe_allow_html=True
-)
-
-line_data = filtered_data.sort_values("unemployment_rate", ascending=False).reset_index(drop=True)
-line_data["rank"] = line_data.index + 1
-
-fig_line = px.line(
-    line_data,
-    x="rank",
+fig8 = px.scatter(
+    filtered_data,
+    x="college_education_rate",
     y="unemployment_rate",
-    title="Unemployment Rate Across Chicago Census Tracts",
-    labels={"rank": "Census Tract Rank", "unemployment_rate": "Unemployment Rate (%)"},
-    markers=True
+    size="community_resources",
+    hover_name="GEOID",
+    hover_data={
+        "college_education_rate": ":.2f",
+        "unemployment_rate": ":.2f",
+        "community_resources": True,
+        "crime_per_1000_workers": ":.2f",
+        "development_priority": True
+    },
+    title="Unemployment Rate vs. College Education Rate",
+    labels={
+        "college_education_rate": "College Education Rate (%)",
+        "unemployment_rate": "Unemployment Rate (%)",
+        "community_resources": "Community Resources"
+    }
 )
 
-fig_line.update_traces(line=dict(color="#17BECF", width=3), marker=dict(color="#17BECF", size=6))
-fig_line.update_layout(height=500, margin=dict(l=20, r=20, t=60, b=20))
-
-st.plotly_chart(fig_line, use_container_width=True)
-
-
-# ============================================================
-# RELATIONSHIPS
-# ============================================================
-
-st.markdown(
-    '<div class="section-title"> Relationships Between Community Conditions</div>',
-    unsafe_allow_html=True
+fig8.update_layout(
+    autosize=True,
+    height=500,
+    margin=dict(
+        l=20,
+        r=20,
+        t=60,
+        b=20
+    )
 )
 
-relationship1, relationship2 = st.columns(2)
 
-with relationship1:
-    scatter_data = filtered_data.dropna(subset=["college_education_rate", "crime_per_1000_workers"])
+col7, col8 = st.columns(2)
 
-    fig_crime_education = px.scatter(
-        scatter_data,
-        x="college_education_rate",
-        y="crime_per_1000_workers",
-        title="Crime Rate vs Educational Attainment",
-        labels={
-            "college_education_rate": "College Education Rate (%)",
-            "crime_per_1000_workers": "Crime per 1,000 Workers"
-        },
-        hover_name="NAMELSAD",
-        size="community_resources",
-        color_discrete_sequence=["#FF7F0E"]
+with col7:
+
+    st.plotly_chart(
+        fig7,
+        use_container_width=True
     )
 
-    fig_crime_education.update_layout(height=500, margin=dict(l=20, r=20, t=60, b=20))
-    st.plotly_chart(fig_crime_education, use_container_width=True)
+with col8:
 
-with relationship2:
-    education_data = filtered_data.dropna(subset=["unemployment_rate", "college_education_rate"])
-
-    fig_unemployment_education = px.scatter(
-        education_data,
-        x="college_education_rate",
-        y="unemployment_rate",
-        title="Unemployment Rate vs College Education Rate",
-        labels={
-            "college_education_rate": "College Education Rate (%)",
-            "unemployment_rate": "Unemployment Rate (%)"
-        },
-        hover_name="NAMELSAD",
-        color_discrete_sequence=["#7F3C8D"]
+    st.plotly_chart(
+        fig8,
+        use_container_width=True
     )
-
-    fig_unemployment_education.update_layout(height=500, margin=dict(l=20, r=20, t=60, b=20))
-    st.plotly_chart(fig_unemployment_education, use_container_width=True)
 
 
 # ============================================================
@@ -675,13 +1195,15 @@ with relationship2:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title"> Underlying Census Tract Data</div>',
+    '<div class="section-title">📋 Census Tract Data</div>',
     unsafe_allow_html=True
 )
 
+
 display_columns = [
     "GEOID",
-    "NAMELSAD",
+    "labor_force",
+    "unemployed",
     "unemployment_rate",
     "community_resources",
     "crime_per_1000_workers",
@@ -690,27 +1212,71 @@ display_columns = [
     "development_priority"
 ]
 
-display_data = filtered_data[display_columns].copy()
+display_data = filtered_data[
+    display_columns
+].copy()
 
-display_data = display_data.rename(columns={
-    "GEOID": "GEOID",
-    "NAMELSAD": "Census Tract",
-    "unemployment_rate": "Unemployment Rate (%)",
-    "community_resources": "Community Resources",
-    "crime_per_1000_workers": "Crime / 1,000 Workers",
-    "college_education_rate": "College Education (%)",
-    "development_priority_score": "Priority Score",
-    "development_priority": "Development Priority"
-})
 
-for column in ["Unemployment Rate (%)", "Crime / 1,000 Workers", "College Education (%)", "Priority Score"]:
-    display_data[column] = display_data[column].round(2)
+# ------------------------------------------------------------
+# Rename columns for presentation
+# ------------------------------------------------------------
+
+display_data = display_data.rename(
+    columns={
+        "GEOID": "Census Tract",
+        "labor_force": "Labor Force",
+        "unemployed": "Unemployed",
+        "unemployment_rate": "Unemployment Rate (%)",
+        "community_resources": "Community Resources",
+        "crime_per_1000_workers": "Crime per 1,000 Workers",
+        "college_education_rate": "College Education Rate (%)",
+        "development_priority_score": "Priority Score",
+        "development_priority": "Development Priority"
+    }
+)
+
+
+# ------------------------------------------------------------
+# Formatting
+# ------------------------------------------------------------
 
 st.dataframe(
     display_data,
     use_container_width=True,
-    height=450,
-    hide_index=True
+    hide_index=True,
+    column_config={
+        "Census Tract": st.column_config.TextColumn(
+            "Census Tract"
+        ),
+        "Labor Force": st.column_config.NumberColumn(
+            "Labor Force",
+            format="%d"
+        ),
+        "Unemployed": st.column_config.NumberColumn(
+            "Unemployed",
+            format="%d"
+        ),
+        "Unemployment Rate (%)": st.column_config.NumberColumn(
+            "Unemployment Rate (%)",
+            format="%.2f%%"
+        ),
+        "Community Resources": st.column_config.NumberColumn(
+            "Community Resources",
+            format="%d"
+        ),
+        "Crime per 1,000 Workers": st.column_config.NumberColumn(
+            "Crime per 1,000 Workers",
+            format="%.2f"
+        ),
+        "College Education Rate (%)": st.column_config.NumberColumn(
+            "College Education Rate (%)",
+            format="%.2f%%"
+        ),
+        "Priority Score": st.column_config.NumberColumn(
+            "Priority Score",
+            format="%.2f"
+        )
+    }
 )
 
 
@@ -719,55 +1285,53 @@ st.dataframe(
 # ============================================================
 
 st.markdown(
-    '<div class="section-title"> Download Filtered Data</div>',
+    '<div class="section-title">📥 Export Data</div>',
     unsafe_allow_html=True
 )
 
-csv_data = display_data.to_csv(index=False).encode("utf-8")
+
+csv_data = display_data.to_csv(
+    index=False
+).encode("utf-8")
+
 
 st.download_button(
-    label=" Download Filtered CSV",
+    label="📥 Download Filtered CSV",
     data=csv_data,
     file_name="chicago_community_development_filtered.csv",
-    mime="text/csv"
+    mime="text/csv",
+    use_container_width=True,
+    key="download_filtered_data"
 )
 
 
 # ============================================================
-# DASHBOARD GUIDE
+# DATA SOURCE INFORMATION
 # ============================================================
 
-with st.expander(" Dashboard Guide"):
-    st.markdown("""
-    ### How to use this dashboard
+st.markdown(
+    """
+    <div class="info-box">
 
-    **1. Map Indicator**
-    Select an indicator to change the variable displayed on the Chicago census tract map.
+    <b>Data Sources</b><br><br>
 
-    **2. Development Priority**
-    Filter the dashboard to focus on Low, Moderate, High, or Very High Priority areas.
+    • U.S. Census Bureau — 2024 American Community Survey (ACS 5-Year)<br>
+    • U.S. Census Bureau — TIGER/Line Census Tract Boundaries<br>
+    • Chicago Police Department — Chicago Data Portal Crime Records<br>
+    • OpenStreetMap — Community Resource Locations<br><br>
 
-    **3. Key Performance Indicators**
-    The KPI cards provide a quick summary of the selected census tracts. Hover over a card to see what each indicator represents.
+    <b>Key Indicators</b><br><br>
 
-    **4. Charts**
-    The visualisations examine:
-    - Unemployment differences across census tracts
-    - Distribution of community resources
-    - Development priority levels
-    - Average unemployment by priority
-    - Crime and education relationships
-    - Unemployment and education relationships
+    • Unemployment Rate — unemployed population as a percentage of the civilian labor force<br>
+    • College Education Rate — percentage of adults aged 25+ with a bachelor's degree or higher<br>
+    • Community Resources — mapped schools, hospitals, clinics, libraries, community centres and places of worship<br>
+    • Crime Rate — reported crime incidents per 1,000 workers<br>
+    • Development Priority Score — composite indicator identifying areas with greater potential development needs
 
-    **5. Development Priority**
-    Higher development priority scores identify census tracts with greater combinations of community challenges.
-
-    **6. Data Table**
-    The table provides the underlying census tract-level indicators used in the analysis.
-
-    **7. Download**
-    Download the currently filtered dataset as a CSV file.
-    """)
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
@@ -777,16 +1341,12 @@ with st.expander(" Dashboard Guide"):
 st.markdown(
     """
     <div class="footer">
-        Chicago Community Development Dashboard |
-        Census Tract Analysis |
-        Community Development Planning
+
+    <b>Chicago Community Development Dashboard</b><br>
+    Geospatial Data Analysis and Community Development Planning<br>
+    Data Science Project — Chicago, Illinois
+
     </div>
     """,
     unsafe_allow_html=True
 )
-'''
-
-# Write to target files
-app_file.write_text(streamlit_app, encoding="utf-8")
-Path("app.py").write_text(streamlit_app, encoding="utf-8")
-

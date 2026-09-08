@@ -215,7 +215,7 @@ if missing_columns:
 # SIDEBAR
 # ============================================================
 
-st.sidebar.title("🎛️ Dashboard Filters")
+st.sidebar.title(" Dashboard Filters")
 
 st.sidebar.markdown("Use the controls below to explore Chicago census tracts.")
 
@@ -320,7 +320,7 @@ avg_priority_score = filtered_data["development_priority_score"].mean()
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">📊 Key Performance Indicators</div>',
+    '<div class="section-title"> Key Performance Indicators</div>',
     unsafe_allow_html=True
 )
 
@@ -392,7 +392,7 @@ with kpi6:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">🗺️ Geographic Distribution</div>',
+    '<div class="section-title"> Geographic Distribution</div>',
     unsafe_allow_html=True
 )
 
@@ -449,7 +449,7 @@ st.plotly_chart(fig_map, use_container_width=True)
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">💼 Employment & Community Resources</div>',
+    '<div class="section-title"> Employment & Community Resources</div>',
     unsafe_allow_html=True
 )
 
@@ -507,7 +507,7 @@ with chart2:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">🎯 Development Priority Analysis</div>',
+    '<div class="section-title"> Development Priority Analysis</div>',
     unsafe_allow_html=True
 )
 
@@ -597,7 +597,7 @@ st.plotly_chart(fig_top_priority, use_container_width=True)
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">📈 Unemployment Variation Across Chicago</div>',
+    '<div class="section-title"> Unemployment Variation Across Chicago</div>',
     unsafe_allow_html=True
 )
 
@@ -624,7 +624,7 @@ st.plotly_chart(fig_line, use_container_width=True)
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">🔎 Relationships Between Community Conditions</div>',
+    '<div class="section-title"> Relationships Between Community Conditions</div>',
     unsafe_allow_html=True
 )
 
@@ -675,7 +675,7 @@ with relationship2:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">📋 Underlying Census Tract Data</div>',
+    '<div class="section-title"> Underlying Census Tract Data</div>',
     unsafe_allow_html=True
 )
 
@@ -719,14 +719,14 @@ st.dataframe(
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">⬇️ Download Filtered Data</div>',
+    '<div class="section-title"> Download Filtered Data</div>',
     unsafe_allow_html=True
 )
 
 csv_data = display_data.to_csv(index=False).encode("utf-8")
 
 st.download_button(
-    label="📥 Download Filtered CSV",
+    label=" Download Filtered CSV",
     data=csv_data,
     file_name="chicago_community_development_filtered.csv",
     mime="text/csv"
@@ -737,7 +737,7 @@ st.download_button(
 # DASHBOARD GUIDE
 # ============================================================
 
-with st.expander("ℹ️ Dashboard Guide"):
+with st.expander(" Dashboard Guide"):
     st.markdown("""
     ### How to use this dashboard
 

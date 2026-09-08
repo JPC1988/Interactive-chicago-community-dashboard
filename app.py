@@ -563,170 +563,74 @@ avg_priority_score = (
     filtered_data["development_priority_score"].mean()
 )
 
-
 # ============================================================
 # INTERACTIVE KPI CARDS
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">'
-    ' Key Performance Indicators'
-    '</div>',
+    '<div class="section-title"> Key Performance Indicators</div>',
     unsafe_allow_html=True
 )
 
-
-# Desktop: 6 columns
-# Streamlit automatically stacks these on narrower screens.
 kpi1, kpi2, kpi3, kpi4, kpi5, kpi6 = st.columns(6)
 
-
 with kpi1:
-
     st.markdown(
-        f"""
-        <div class="kpi-card"
-             title="Number of census tracts included in the current filter.">
-
-            <div class="kpi-label">
-                Census Tracts
-            </div>
-
-            <div class="kpi-value">
-                {num_tracts:,}
-            </div>
-
-            <div class="kpi-description">
-                Areas currently analysed
-            </div>
-
-        </div>
-        """,
+        f"""<div class="kpi-card" title="Number of census tracts included in the current filter.">
+<div class="kpi-label">Census Tracts</div>
+<div class="kpi-value">{num_tracts:,}</div>
+<div class="kpi-description">Areas currently analysed</div>
+</div>""",
         unsafe_allow_html=True
     )
-
 
 with kpi2:
-
     st.markdown(
-        f"""
-        <div class="kpi-card"
-             title="Average unemployment rate among the selected census tracts.">
-
-            <div class="kpi-label">
-                Avg Unemployment
-            </div>
-
-            <div class="kpi-value">
-                {avg_unemployment:.2f}%
-            </div>
-
-            <div class="kpi-description">
-                Average unemployment rate
-            </div>
-
-        </div>
-        """,
+        f"""<div class="kpi-card" title="Average unemployment rate among the selected census tracts.">
+<div class="kpi-label">Avg Unemployment</div>
+<div class="kpi-value">{avg_unemployment:.2f}%</div>
+<div class="kpi-description">Average unemployment rate</div>
+</div>""",
         unsafe_allow_html=True
     )
-
 
 with kpi3:
-
     st.markdown(
-        f"""
-        <div class="kpi-card"
-             title="Total number of mapped community resources in the selected census tracts.">
-
-            <div class="kpi-label">
-                Community Resources
-            </div>
-
-            <div class="kpi-value">
-                {total_resources:,.0f}
-            </div>
-
-            <div class="kpi-description">
-                Total mapped resources
-            </div>
-
-        </div>
-        """,
+        f"""<div class="kpi-card" title="Total number of mapped community resources in the selected census tracts.">
+<div class="kpi-label">Community Resources</div>
+<div class="kpi-value">{total_resources:,.0f}</div>
+<div class="kpi-description">Total mapped resources</div>
+</div>""",
         unsafe_allow_html=True
     )
-
 
 with kpi4:
-
     st.markdown(
-        f"""
-        <div class="kpi-card"
-             title="Average reported crime count per 1,000 workers across the selected census tracts.">
-
-            <div class="kpi-label">
-                Avg Crime Rate
-            </div>
-
-            <div class="kpi-value">
-                {avg_crime:.2f}
-            </div>
-
-            <div class="kpi-description">
-                Crime per 1,000 workers
-            </div>
-
-        </div>
-        """,
+        f"""<div class="kpi-card" title="Average reported crime count per 1,000 workers across the selected census tracts.">
+<div class="kpi-label">Avg Crime Rate</div>
+<div class="kpi-value">{avg_crime:.2f}</div>
+<div class="kpi-description">Crime per 1,000 workers</div>
+</div>""",
         unsafe_allow_html=True
     )
-
 
 with kpi5:
-
     st.markdown(
-        f"""
-        <div class="kpi-card"
-             title="Average percentage of residents aged 25+ with a bachelor's degree or higher.">
-
-            <div class="kpi-label">
-                Avg Education
-            </div>
-
-            <div class="kpi-value">
-                {avg_education:.2f}%
-            </div>
-
-            <div class="kpi-description">
-                Bachelor's degree or higher
-            </div>
-
-        </div>
-        """,
+        f"""<div class="kpi-card" title="Average percentage of residents aged 25+ with a bachelor's degree or higher.">
+<div class="kpi-label">Avg Education</div>
+<div class="kpi-value">{avg_education:.2f}%</div>
+<div class="kpi-description">Bachelor's degree or higher</div>
+</div>""",
         unsafe_allow_html=True
     )
 
-
 with kpi6:
-
     st.markdown(
-        f"""
-        <div class="kpi-card"
-             title="Average development priority score for the selected census tracts.">
-
-            <div class="kpi-label">
-                Avg Priority Score
-            </div>
-
-            <div class="kpi-value">
-                {avg_priority_score:.2f}
-            </div>
-
-            <div class="kpi-description">
-                Development need score
-            </div>
-
-        </div>
-        """,
+        f"""<div class="kpi-card" title="Average development priority score for the selected census tracts.">
+<div class="kpi-label">Avg Priority Score</div>
+<div class="kpi-value">{avg_priority_score:.2f}</div>
+<div class="kpi-description">Development need score</div>
+</div>""",
         unsafe_allow_html=True
     )
 
